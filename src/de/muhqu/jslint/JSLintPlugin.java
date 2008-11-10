@@ -1,0 +1,161 @@
+package de.muhqu.jslint;
+
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.*;
+import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.msg.*;
+import java.io.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import errorlist.*;
+import java.util.*;
+import gnu.regexp.*;
+import console.*;
+import org.mozilla.javascript.*;
+
+
+public class JSLintPlugin extends EBPlugin
+{
+	public final static String NAME = "jslint";
+	static boolean log = jEdit.getBooleanProperty("jslint.log",false);;
+	DefaultErrorSource errsrc;
+	private static JSLintPlugin me;
+	
+	public void start()
+	{
+		super.start();
+		errsrc = new DefaultErrorSource("JSLint");
+		ErrorSource.registerErrorSource(errsrc);
+		me = this;
+	}
+
+	public void stop()
+	{
+		ErrorSource.unregisterErrorSource(errsrc);
+		errsrc = null;
+		me = null;
+		super.stop();
+	}
+
+	public void handleMessage(EBMessage ebmess)
+	{
+		if (ebmess instanceof BufferUpdate)
+		{
+			System.out.println("JSLint running on save "+
+			jEdit.getBooleanProperty("jslint.runonsave"));
+			if(jEdit.getBooleanProperty("jslint.runonsave"))
+			{
+				BufferUpdate bu = (BufferUpdate)ebmess;
+				if (bu.getWhat() == BufferUpdate.SAVED)
+				{
+					run(bu.getView());
+				}
+			}
+		}
+	}
+	
+	public static String inputStreamAsString(InputStream stream)
+		throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = br.readLine()) != null) {
+			sb.append(line + "\n");
+		}
+		br.close();
+		return sb.toString();
+	}
+
+	public static void runJSLint(View view)
+	{
+		me.run(view);
+	}
+
+	public void run(View view)
+	{
+		try
+		{
+			Buffer buffer = view.getBuffer();
+			String buffer_mode = buffer.getMode().getName();
+			if (buffer_mode.equals("javascript"))
+			{
+				errsrc.clear();
+				
+				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/jslint.js"));
+				//System.out.println("Got JSLint Source: " + jslintsource);
+				
+				String sourcepath = buffer.getPath();
+				String jssource = buffer.getText(0,buffer.getLength());
+				//System.out.println("Got Clean Source: " + cleanjssource);
+				
+				
+				//errsrc.addError(ErrorSource.ERROR,sourcepath,Integer.parseInt("2")-1,0,0,"bla bla");
+				
+				Context cx = Context.enter();
+				try {
+					Scriptable scope = cx.initStandardObjects();
+					
+					// Now evaluate JSLint Source, so we've setuped our JS env
+					cx.evaluateString(scope, jslintsource, "<cmd>", 1, null);
+					
+					// Checking for JSLINT function
+					Object fObj = scope.get("JSLINT", scope);
+					if (!(fObj instanceof Function)) {
+						System.out.println("JSLINT is not defined.");
+					} else {
+						System.out.println("JSLINT is defined, so call it.");
+						Object functionArgs[] = { jssource.replaceAll("\t", " ") }; // need to translate TABs to Spaces to get correct column references
+						Function JSLINT = (Function)fObj;
+						Object result = JSLINT.call(cx, scope, scope, functionArgs);
+						Scriptable errArr = (Scriptable) JSLINT.get("errors", scope);
+						int errLength = (int)Context.toNumber(ScriptableObject.getProperty(errArr, "length"));
+						System.out.println("JSLINT.errors.length: "+errLength);
+						System.out.println("JSLINT.errors: "+Context.toString(errArr));
+						for (int i=0; i<errLength; i++){
+							Scriptable err = (Scriptable) errArr.get(i, scope);
+							int errLine = (int)Context.toNumber(ScriptableObject.getProperty(err, "line"));
+							int errCol = (int)Context.toNumber(ScriptableObject.getProperty(err, "character"));
+							String errMsg = Context.toString(ScriptableObject.getProperty(err, "reason"));
+							
+							System.out.println("JSLINT.errors["+i+"]: on line "+errLine+", col "+errCol+", msg: "+errMsg+"");
+							
+							System.out.println("match "+buffer.getVirtualWidth(errLine,errCol)+" - "+errCol);
+							
+							errsrc.addError(ErrorSource.ERROR,
+								sourcepath,
+								errLine,
+								0,
+								errCol,
+								errMsg);
+						}
+					}
+				} finally {
+					Context.exit();
+				}
+			}
+		}
+		catch(IOException e)
+		{
+			Log.log(Log.ERROR,this.getClass(),"IOException when executing Process "+e);
+			e.printStackTrace();
+		}
+	}
+
+	private String processOptions(String props)
+	{
+		if (props == null)
+		{
+			return "";
+		}
+
+		StringBuffer strbuf = new StringBuffer();
+		StringTokenizer strtok = new StringTokenizer(props,",");
+		while(strtok.hasMoreTokens())
+		{
+			strbuf.append(" -"+strtok.nextToken());
+		}
+		return strbuf.toString();
+	}
+
+}

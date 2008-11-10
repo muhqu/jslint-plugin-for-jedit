@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="jslint.runjslint">
+        <CODE>
+            de.muhqu.jslint.JSLintPlugin.runJSLint(view);
+        </CODE>
+    </ACTION>
+</ACTIONS>
+
+

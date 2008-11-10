@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+
+<project name="JSLint" default="jar" basedir=".">
+	<property file="build.properties"></property>
+	<property name="plugin.build" value="build" />
+	<property name="version" value="0.1" />
+	<property name="plugin.src" value="src" />
+	<property name="jedit.install.dir" value="../.." />
+	<property name="install.dir" value=".." />
+
+
+	<target name="init">
+		<mkdir dir="${plugin.build}"/>
+	</target>
+
+	<path id="build.classpath">
+		<!-- Other plugin dependencies -->
+		<pathelement path="${install.dir}/errorlist.jar" />
+		<pathelement path="${install.dir}/console.jar" />
+		<pathelement path="${install.dir}/js.jar" />
+		<pathelement path="${jedit.install.dir}/jedit.jar" />
+		<pathelement path="." />
+	</path>
+
+
+	<target name="compile" description="Compiles all java files for the plugin" depends="init">
+		<javac
+				srcdir="${plugin.src}"
+				destdir="${plugin.build}"
+				deprecation="on"
+				debug="on"
+		optimize="off"
+		>
+			<classpath>
+				<path refid="build.classpath"/>
+			</classpath>
+			<compilerarg compiler="javac1.6" value="-Xlint:unchecked"/>
+		</javac>
+
+	</target>
+
+
+	<target name="clean" description="Removes all generated files" depends="init">
+		<delete dir="${plugin.build}"  failonerror="false"/>
+		<mkdir dir="${plugin.build}"/>
+	</target>
+
+
+	<target name="dist" depends="compile" description="Packages the plugin in the jars directory">
+		<copy todir="${plugin.build}">
+			<fileset dir="${plugin.src}" includes="*.xml,*.props,**/*.txt,**/*.js,**/*.log" excludes="build.xml,dockables.xml"></fileset>
+			<fileset dir="." includes="docs/*.html" excludes="build.xml,dockables.xml"></fileset>
+		</copy>
+		<jar
+			jarfile="${install.dir}/${ant.project.name}.jar"
+			basedir="${plugin.build}"
+			includes="**/*.class,**/*.xml,**/*.html,**/*.js,**/*.props"
+			excludes="build.xml,dockables.xml,**/Test.*"
+		/>
+	</target>
+
+
+	<target name="src_dist" description="Packages sources for distribution">
+		<zip zipfile="${plugin.src}/../${ant.project.name}${version}_src.zip"
+			basedir="${plugin.src}/.."
+			excludes="build/**,tags/**,**/*.bak,**/Fas*.jar,binaries/**,**/*.class,**/*.*~,**/*.zip"
+		/>
+	</target>
+
+	<target name="release" description="Packages all .jar file with JSLint binaries for release" depends="init,dist">
+		<zip zipfile="../${ant.project.name}${version}.zip">
+			<fileset dir="../binaries"></fileset>
+			<fileset dir="${install.dir}" includes="${ant.project.name}.jar"></fileset>
+		</zip>
+	</target>
+
+	<target name="re-dist" description="Clean, init, dist" depends="clean, init, dist">
+	</target>
+
+</project>
+
+
