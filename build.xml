@@ -10,6 +10,7 @@
 	<property name="dist.dir" value="dist" />
 
 
+	
 	<target name="init">
 		<mkdir dir="${plugin.build}"/>
 	</target>
@@ -71,6 +72,7 @@
 
 	<target name="release" description="Packages all .jar file with JSLint binaries for release" depends="init,dist">
 		<zip zipfile="./${ant.project.name}${version}.zip">
+			<fileset dir="./" includes="README"></fileset>
 			<fileset dir="${dist.dir}" includes="${ant.project.name}.jar"></fileset>
 		</zip>
 	</target>

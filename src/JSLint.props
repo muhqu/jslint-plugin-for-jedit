@@ -1,25 +1,19 @@
-#some props here
 
-#name=value
+plugin.de.muhqu.jslint.JSLintPlugin.activate=defer
 plugin.de.muhqu.jslint.JSLintPlugin.name=JSLint
 plugin.de.muhqu.jslint.JSLintPlugin.author=Mathias Leppich
-plugin.de.muhqu.jslint.JSLintPlugin.version=0.1
-
-plugin.de.muhqu.jslint.JSLintPlugin.docs=docs/index.html
-plugin.de.muhqu.jslint.JSLintPlugin.activate=defer
-
-jslint.title=JSLint
-jslint.label=JSLint
-options.jslint.label=JSLint
-jslint-toggle.label=JSLint
-#external depencies
-plugin.de.muhqu.jslint.JSLintPlugin.depend.0=jdk 1.3
-plugin.de.muhqu.jslint.JSLintPlugin.depend.1=jedit 04.02.99.00
-plugin.de.muhqu.jslint.JSLintPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
-plugin.de.muhqu.jslint.JSLintPlugin.depend.2=plugin console.ConsolePlugin 4.0.1
+plugin.de.muhqu.jslint.JSLintPlugin.version=0.2
 de.muhqu.jslint.JSLintPlugin.title=JSLint
 
-plugin.de.muhqu.jslint.JSLintPlugin.menu = jslint.runjslint
+#external depencies
+plugin.de.muhqu.jslint.JSLintPlugin.depend.0=jdk 1.5
+plugin.de.muhqu.jslint.JSLintPlugin.depend.1=jedit 04.03.12.00
+plugin.de.muhqu.jslint.JSLintPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
+plugin.de.muhqu.jslint.JSLintPlugin.depend.3=plugin console.ConsolePlugin 4.3.6
+
+
+plugin.de.muhqu.jslint.JSLintPlugin.menu = runjslint
+runjslint.label = Run JSLint
 
 plugin.de.muhqu.jslint.JSLintPlugin.option-pane=jslint
 options.jslint.label=JSLint

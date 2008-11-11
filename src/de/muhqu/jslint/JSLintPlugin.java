@@ -40,16 +40,23 @@ public class JSLintPlugin extends EBPlugin
 
 	public void handleMessage(EBMessage ebmess)
 	{
-		if (ebmess instanceof BufferUpdate)
-		{
+		if (ebmess instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate)ebmess;
-			if (bu.getWhat() == BufferUpdate.SAVED)
-			{
+			if (bu.getWhat() == BufferUpdate.SAVED) {
 				System.out.println("JSLint running on save "+
 				jEdit.getBooleanProperty("jslint.runonsave"));
-				if(jEdit.getBooleanProperty("jslint.runonsave"))
-				{
+				if(jEdit.getBooleanProperty("jslint.runonsave")) {
 					run(bu.getView());
+				}
+			}
+		}
+		else if (ebmess instanceof EditPaneUpdate) {
+			EditPaneUpdate epu = (EditPaneUpdate)ebmess;
+			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
+				System.out.println("JSLint running on buffer switch "+
+				jEdit.getBooleanProperty("jslint.runonbufferswitch"));
+				if(jEdit.getBooleanProperty("jslint.runonbufferswitch")) {
+					run(epu.getEditPane().getView());
 				}
 			}
 		}

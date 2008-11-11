@@ -15,11 +15,13 @@ import java.util.*;
 public class JSLintOptionPane extends AbstractOptionPane
 	implements ActionListener
 {
-	JCheckBox chk_runOnSave;
-	private boolean allOn=false;
 	private Hashtable<String, JCheckBox> OptionCheckBoxes = new Hashtable<String, JCheckBox>();
 	private Hashtable<String, JRadioButton> PresetRadioButtons = new Hashtable<String, JRadioButton>();
 	private ButtonGroup preSelectBtnGroup = new ButtonGroup();
+	
+	private JCheckBox chk_runOnSave;
+	private JCheckBox chk_runOnSwitch;
+	
 
 	public JSLintOptionPane()
 	{
@@ -28,17 +30,15 @@ public class JSLintOptionPane extends AbstractOptionPane
 
 	protected void _init()
 	{
-		String msg_options = jEdit.getProperty("jslint.options");
-		if (msg_options == null)
-		{
-			allOn=true;
-		}
 		setUp();
 	}
 
 	public void _save()
 	{
-		jEdit.setBooleanProperty("jslint.runonsave",chk_runOnSave.isSelected());
+		jEdit.setBooleanProperty("jslint.runonsave",
+			chk_runOnSave.isSelected());
+		jEdit.setBooleanProperty("jslint.runonbufferswitch",
+			chk_runOnSwitch.isSelected());
 		saveSettings();
 	}
 
@@ -59,6 +59,12 @@ public class JSLintOptionPane extends AbstractOptionPane
 			jEdit.getBooleanProperty("jslint.runonsave")
 		);
 		pnlGeneral.add(chk_runOnSave);
+		
+		chk_runOnSwitch = new JCheckBox(
+			"Run JSLint on Buffer switch",
+			jEdit.getBooleanProperty("jslint.runonbufferswitch")
+		);
+		pnlGeneral.add(chk_runOnSwitch);
 		
 		String preSelect = this.getPreselectString();
 
