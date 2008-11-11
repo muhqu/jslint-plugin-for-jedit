@@ -3,21 +3,23 @@
 <project name="JSLint" default="jar" basedir=".">
 	<property file="build.properties"></property>
 	<property name="plugin.build" value="build" />
-	<property name="version" value="0.1" />
+	<property name="version" value="0.2" />
 	<property name="plugin.src" value="src" />
+	<property name="jedit.plugins.dir" value="../.." />
 	<property name="jedit.install.dir" value="../.." />
-	<property name="install.dir" value=".." />
+	<property name="dist.dir" value="dist" />
 
 
 	<target name="init">
 		<mkdir dir="${plugin.build}"/>
 	</target>
 
+
 	<path id="build.classpath">
 		<!-- Other plugin dependencies -->
-		<pathelement path="${install.dir}/errorlist.jar" />
-		<pathelement path="${install.dir}/console.jar" />
-		<pathelement path="${install.dir}/js.jar" />
+		<pathelement path="${jedit.plugins.dir}/errorlist.jar" />
+		<pathelement path="${jedit.plugins.dir}/console.jar" />
+		<pathelement path="${jedit.plugins.dir}/js.jar" />
 		<pathelement path="${jedit.install.dir}/jedit.jar" />
 		<pathelement path="." />
 	</path>
@@ -45,14 +47,13 @@
 		<mkdir dir="${plugin.build}"/>
 	</target>
 
-
 	<target name="dist" depends="compile" description="Packages the plugin in the jars directory">
 		<copy todir="${plugin.build}">
 			<fileset dir="${plugin.src}" includes="*.xml,*.props,**/*.txt,**/*.js,**/*.log" excludes="build.xml,dockables.xml"></fileset>
 			<fileset dir="." includes="docs/*.html" excludes="build.xml,dockables.xml"></fileset>
 		</copy>
 		<jar
-			jarfile="${install.dir}/${ant.project.name}.jar"
+			jarfile="${dist.dir}/${ant.project.name}.jar"
 			basedir="${plugin.build}"
 			includes="**/*.class,**/*.xml,**/*.html,**/*.js,**/*.props"
 			excludes="build.xml,dockables.xml,**/Test.*"
@@ -67,14 +68,26 @@
 		/>
 	</target>
 
+
 	<target name="release" description="Packages all .jar file with JSLint binaries for release" depends="init,dist">
-		<zip zipfile="../${ant.project.name}${version}.zip">
-			<fileset dir="../binaries"></fileset>
-			<fileset dir="${install.dir}" includes="${ant.project.name}.jar"></fileset>
+		<zip zipfile="./${ant.project.name}${version}.zip">
+			<fileset dir="${dist.dir}" includes="${ant.project.name}.jar"></fileset>
 		</zip>
 	</target>
 
+
+	<target name="install" description="Install the distributed jar" depends="dist">
+		<copy todir="${install.dir}">
+			<fileset dir="${dist.dir}" includes="${ant.project.name}.jar"></fileset>
+		</copy>
+	</target>
+
+
 	<target name="re-dist" description="Clean, init, dist" depends="clean, init, dist">
+	</target>
+
+
+	<target name="re-dist-install" description="Clean, init, dist, install" depends="clean, init, dist, install">
 	</target>
 
 </project>

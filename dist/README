@@ -1,0 +1,33 @@
+
+ JSLint plugin for jEdit
+ ================================ = = =  -  -
+
+ INSTALL
+
+   1. Download Rhino (JavaScript Engine for Java)
+        http://www.mozilla.org/rhino/download.html
+
+   2. Place the "js.jar", from the Rhino release zip in the same folder
+      as the other jEdit plugins.
+        e.g. cd %USERPROFILE%\.jedit\jars
+
+   3. Copy the "JSLint.jar", from this relese in the same folder as the
+      other jEdit plugins.
+        e.g. cd %USERPROFILE%\.jedit\jars
+		
+   4. Open jEdit -> Plugins -> Plugin Manager...
+      there you need to check, both jar files (js.jar and JSLint.jar)
+
+   5. Open jEdit -> Plugins -> Plugin Options... -> JSLint
+      change some settings, if you like...
+
+
+ COPYRIGHTS
+
+     JSLint plugin for jEdit
+        Copyright (c) 2008 Mathias Leppich (http://muhqu.de)
+
+     jslint.js
+        Copyright (c) 2008 Douglas Crockford  (www.JSLint.com)
+
+

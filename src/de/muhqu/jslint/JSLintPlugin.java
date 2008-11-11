@@ -42,12 +42,12 @@ public class JSLintPlugin extends EBPlugin
 	{
 		if (ebmess instanceof BufferUpdate)
 		{
-			System.out.println("JSLint running on save "+
-			jEdit.getBooleanProperty("jslint.runonsave"));
-			if(jEdit.getBooleanProperty("jslint.runonsave"))
+			BufferUpdate bu = (BufferUpdate)ebmess;
+			if (bu.getWhat() == BufferUpdate.SAVED)
 			{
-				BufferUpdate bu = (BufferUpdate)ebmess;
-				if (bu.getWhat() == BufferUpdate.SAVED)
+				System.out.println("JSLint running on save "+
+				jEdit.getBooleanProperty("jslint.runonsave"));
+				if(jEdit.getBooleanProperty("jslint.runonsave"))
 				{
 					run(bu.getView());
 				}
@@ -89,7 +89,6 @@ public class JSLintPlugin extends EBPlugin
 				String jssource = buffer.getText(0,buffer.getLength());
 				//System.out.println("Got Clean Source: " + cleanjssource);
 				
-				
 				//errsrc.addError(ErrorSource.ERROR,sourcepath,Integer.parseInt("2")-1,0,0,"bla bla");
 				
 				Context cx = Context.enter();
@@ -105,7 +104,35 @@ public class JSLintPlugin extends EBPlugin
 						System.out.println("JSLINT is not defined.");
 					} else {
 						System.out.println("JSLINT is defined, so call it.");
-						Object functionArgs[] = { jssource.replaceAll("\t", " ") }; // need to translate TABs to Spaces to get correct column references
+				
+						String options = jEdit.getProperty("jslint.options");
+						System.out.println("JSLint Options: " + options);
+						
+						Scriptable jsOpt = cx.newObject(scope);
+						try {
+							StringTokenizer strtok = new StringTokenizer(options,",:");
+							while(strtok.hasMoreTokens())
+							{
+								String key = strtok.nextToken();
+								String value = strtok.nextToken();
+								System.out.println("key: "+key+"   value: "+value);
+								if (value.equalsIgnoreCase("TRUE")) {
+									jsOpt.put(key, jsOpt, true);
+								}
+								else if (value.equalsIgnoreCase("FALSE")) {
+									jsOpt.put(key, jsOpt, false);
+								}
+								else {
+									jsOpt.put(key, jsOpt, value);
+								}
+							}
+						}
+						catch (NoSuchElementException e) {
+						}
+						System.out.println("jsOpt: "+Context.toString(jsOpt));
+						System.out.println("eqeqeq: "+Context.toString(jsOpt.get("eqeqeq", scope)));
+						
+						Object functionArgs[] = { jssource.replaceAll("\t", "    "), jsOpt }; // need to translate TABs to Spaces to get correct column references
 						Function JSLINT = (Function)fObj;
 						Object result = JSLINT.call(cx, scope, scope, functionArgs);
 						Scriptable errArr = (Scriptable) JSLINT.get("errors", scope);
