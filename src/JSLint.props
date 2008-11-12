@@ -2,7 +2,7 @@
 plugin.de.muhqu.jslint.JSLintPlugin.activate=defer
 plugin.de.muhqu.jslint.JSLintPlugin.name=JSLint
 plugin.de.muhqu.jslint.JSLintPlugin.author=Mathias Leppich
-plugin.de.muhqu.jslint.JSLintPlugin.version=0.2
+plugin.de.muhqu.jslint.JSLintPlugin.version=0.3
 de.muhqu.jslint.JSLintPlugin.title=JSLint
 
 #external depencies

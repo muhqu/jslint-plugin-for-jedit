@@ -22,6 +22,37 @@ public class JSLintOptionPane extends AbstractOptionPane
 	private JCheckBox chk_runOnSave;
 	private JCheckBox chk_runOnSwitch;
 	
+	
+	private String advOptions
+			= "passfail|Stop on first error|the scan should stop on first error\n"
+			+ "white|Strict white space|strict whitespace rules apply\n"
+			+ "browser|Assume a browser|standard browser globals should be predefined\n"
+			+ "widget|Assume a Yahoo Widget|the Yahoo Widgets globals should be predefined\n"
+			+ "sidebar|Assume a Windows Sidebar Gadget|the Windows Sidebar Gadgets globals should be predefined\n"
+			+ "rhino|Assume Rhino|the Rhino environment globals should be predefined\n"
+			+ "safe|Safe Subset|the safe subset rules are enforced. These rules are used by ADsafe.\n"
+			+ "adsafe|ADsafe|ADsafe.org rules widget pattern should be enforced.\n"
+			
+			+ "debug|Tolerate debugger statements|debugger statements should be allowed\n"
+			+ "evil|Tolerate eval|eval should be allowed\n"
+			+ "cap|Tolerate HTML case|upper case HTML should be allowed\n"
+			+ "on|Tolerate HTML event handlers|HTML event handlers should be allowed\n"
+			+ "fragment|Tolerate HTML fragments|HTML fragments should be allowed\n"
+			+ "laxbreak|Tolerate sloppy line breaking|statement breaks should not be checked\n"
+			+ "forin|Tolerate unfiltered for in|unfiltered for in statements should be allowed\n"
+			+ "sub|Tolerate inefficient subscripting|subscript notation may be used for expressions better expressed in dot notation\n"
+			+ "css|Tolerate CSS workarounds|CSS workarounds should be tolerated\n"
+			
+			+ "undef|Disallow undefined variables|undefined global variables are errors\n"
+			+ "nomen|Disallow leading _ in identifiers|names should be checked for initial underbars\n"
+			+ "eqeqeq|Disallow  ==  and  !=|=== should be required\n"
+			+ "plusplus|Disallow ++ and --|++ and -- should not be allowed\n"
+			+ "bitwise|Disallow bitwise operators|bitwise operators should not be allowed\n"
+			+ "regexp|Disallow . in RegExp literals|. should not be allowed in RegExp literals\n"
+			
+			+ "onevar|Allow only one var statement per function|only one var statement per function should be allowed\n"
+			+ "strict|Require \"use strict\";|the ES3.1 \"use strict\"; pragma is required.";
+	
 
 	public JSLintOptionPane()
 	{
@@ -66,30 +97,19 @@ public class JSLintOptionPane extends AbstractOptionPane
 		);
 		pnlGeneral.add(chk_runOnSwitch);
 		
-		String preSelect = this.getPreselectString();
-
-		JRadioButton pre_recommended = new JRadioButton(
-				"Recommended Options",
-				(preSelect == "recommended")
-			);
+		JRadioButton pre_recommended = new JRadioButton("Recommended Options");
 		PresetRadioButtons.put("recommended",pre_recommended);
 		pre_recommended.addActionListener(this);
 		preSelectBtnGroup.add(pre_recommended);
 		pnlGeneral.add(pre_recommended);
 		
-		JRadioButton pre_goodparts = new JRadioButton(
-				"Good Parts",
-				(preSelect == "goodparts")
-			);
+		JRadioButton pre_goodparts = new JRadioButton("Good Parts");
 		PresetRadioButtons.put("goodparts",pre_goodparts);
 		pre_goodparts.addActionListener(this);
 		preSelectBtnGroup.add(pre_goodparts);
 		pnlGeneral.add(pre_goodparts);
 		
-		JRadioButton pre_clearall = new JRadioButton(
-				"Clear all",
-				(preSelect == "clearall")
-			);
+		JRadioButton pre_clearall = new JRadioButton("Clear all");
 		PresetRadioButtons.put("clearall",pre_clearall);
 		pre_clearall.addActionListener(this);
 		preSelectBtnGroup.add(pre_clearall);
@@ -191,102 +211,30 @@ public class JSLintOptionPane extends AbstractOptionPane
 
 	private JPanel getOptionsPanel()
 	{
-		GridLayout gLay = new GridLayout();
-		gLay.setColumns(2);
-		gLay.setRows(0);
-		
-		JPanel pnl = new JPanel(gLay);
-		
+		JPanel pnl = new JPanel();
 		pnl.setBorder(new TitledBorder("Advance Options"));
+		pnl.setLayout(new BoxLayout(pnl, BoxLayout.X_AXIS));
+		JPanel pnlLeft = new JPanel();
+		pnlLeft.setLayout(new BoxLayout(pnlLeft, BoxLayout.Y_AXIS));
+		JPanel pnlRight = new JPanel();
+		pnlRight.setLayout(new BoxLayout(pnlRight, BoxLayout.Y_AXIS));
+		pnl.add(pnlLeft);
+		pnl.add(pnlRight);
 		
-		// adsafe	true if ADsafe.org  rules widget pattern should be enforced.
-		OptionCheckBoxes.put("adsafe", new JCheckBox("ADsafe.org  rules widget pattern should be enforced.",false));
-		
-		// bitwise	true if bitwise operators should not be allowed
-		OptionCheckBoxes.put("bitwise", new JCheckBox("bitwise operators should not be allowed",false));
-		
-		// browser	true if the standard browser globals should be predefined
-		OptionCheckBoxes.put("browser", new JCheckBox("standard browser globals should be predefined",false));
-		
-		// cap	true if upper case HTML should be allowed
-		OptionCheckBoxes.put("cap", new JCheckBox("upper case HTML should be allowed",false));
-		
-		// css	true if CSS workarounds should be tolerated
-		OptionCheckBoxes.put("css", new JCheckBox("CSS workarounds should be tolerated",false));
-		
-		// debug	true if debugger statements should be allowed
-		OptionCheckBoxes.put("debug", new JCheckBox("debugger statements should be allowed",false));
-		
-		// eqeqeq	true if === should be required
-		OptionCheckBoxes.put("eqeqeq", new JCheckBox("=== should be required",false));
-		
-		// evil	true if eval should be allowed
-		OptionCheckBoxes.put("evil", new JCheckBox("eval should be allowed",false));
-		
-		// forin	true if unfiltered for in statements should be allowed
-		OptionCheckBoxes.put("forin", new JCheckBox("unfiltered for in statements should be allowed",false));
-		
-		// fragment	true if HTML fragments should be allowed
-		OptionCheckBoxes.put("bitwise", new JCheckBox("HTML fragments should be allowed",false));
-		
-		// // indent	the number of spaces used for indentation (default is 4)
-		
-		// laxbreak	true if statement breaks should not be checked
-		OptionCheckBoxes.put("laxbreak", new JCheckBox("statement breaks should not be checked",false));
-		
-		// nomen	true if names should be checked for initial underbars
-		OptionCheckBoxes.put("nomen", new JCheckBox("names should be checked for initial underbars",false));
-		
-		// on	true if HTML event handlers should be allowed
-		OptionCheckBoxes.put("on", new JCheckBox("HTML event handlers should be allowed",false));
-		
-		// onevar	true if only one var statement per function should be allowed
-		OptionCheckBoxes.put("onevar", new JCheckBox("only one var statement per function should be allowed",false));
-		
-		// passfail	true if the scan should stop on first error
-		OptionCheckBoxes.put("passfail", new JCheckBox("the scan should stop on first error",false));
-		
-		// plusplus	true if ++ and -- should not be allowed
-		OptionCheckBoxes.put("plusplus", new JCheckBox("++ and -- should not be allowed",false));
-		
-		// // predef	an array of strings, the names of predefined global variables
-		
-		// regexp	true if . should not be allowed in RegExp literals
-		OptionCheckBoxes.put("regexp", new JCheckBox(". should not be allowed in RegExp literals",false));
-		
-		// rhino	true if the Rhino environment globals should be predefined
-		OptionCheckBoxes.put("rhino", new JCheckBox("the Rhino environment globals should be predefined",false));
-		
-		// safe	true if the safe subset rules are enforced. These rules are used by ADsafe.
-		OptionCheckBoxes.put("safe",  new JCheckBox("the safe subset rules are enforced. These rules are used by ADsafe.",false));
-		
-		// sidebar	true if the Windows Sidebar Gadgets globals should be predefined
-		OptionCheckBoxes.put("sidebar",  new JCheckBox("the Windows Sidebar Gadgets globals should be predefined",false));
-		
-		// strict	true if the ES3.1 "use strict"; pragma is required.
-		OptionCheckBoxes.put("strict", new JCheckBox("the ES3.1 \"use strict\"; pragma is required.",false));
-		
-		// sub	true if subscript notation may be used for expressions better expressed in dot notation
-		OptionCheckBoxes.put("sub", new JCheckBox("subscript notation may be used for expressions better expressed in dot notation",false));
-		
-		// undef	true if undefined global variables are errors
-		OptionCheckBoxes.put("undef", new JCheckBox("undefined global variables are errors",false));
-		
-		// white	true if strict whitespace rules apply
-		OptionCheckBoxes.put("white", new JCheckBox("strict whitespace rules apply",false));
-		
-		// widget	true if the Yahoo Widgets globals should be predefined
-		OptionCheckBoxes.put("widget", new JCheckBox("the Yahoo Widgets globals should be predefined",false));
-		
-		
-		Enumeration enumeration = OptionCheckBoxes.keys();
-		while(enumeration.hasMoreElements())
+		StringTokenizer strtok = new StringTokenizer(advOptions,"|\n");
+		int count = 0;
+		int max = advOptions.split("\n").length;
+		while(strtok.hasMoreTokens())
 		{
-			String key = (String)enumeration.nextElement();
-			JCheckBox checkbox = (JCheckBox)OptionCheckBoxes.get(key);
+			String key = strtok.nextToken();
+			String title = strtok.nextToken();
+			String desc = strtok.nextToken();
+			JCheckBox checkbox = new JCheckBox(title,false);
+			checkbox.setToolTipText(desc);
+			OptionCheckBoxes.put(key, checkbox);
 			checkbox.setActionCommand("checkbox_"+key);
 			checkbox.addActionListener(this);
-			pnl.add(checkbox);
+			((count++<=max/2) ? pnlLeft : pnlRight).add(checkbox);
 		}
 		
 		return pnl;
