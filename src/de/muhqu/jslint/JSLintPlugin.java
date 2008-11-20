@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.*;
 import errorlist.*;
 import java.util.*;
-import gnu.regexp.*;
 import console.*;
 import org.mozilla.javascript.*;
 
@@ -87,7 +86,6 @@ public class JSLintPlugin extends EBPlugin
 			String buffer_mode = buffer.getMode().getName();
 			if (buffer_mode.equals("javascript"))
 			{
-				
 				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/jslint.js"));
 				//System.out.println("Got JSLint Source: " + jslintsource);
 				
@@ -95,10 +93,7 @@ public class JSLintPlugin extends EBPlugin
 				String jssource = buffer.getText(0,buffer.getLength());
 				//System.out.println("Got Clean Source: " + cleanjssource);
 				
-				
-				//errsrc.clear();
 				errsrc.removeFileErrors(sourcepath);
-				//errsrc.addError(ErrorSource.ERROR,sourcepath,Integer.parseInt("2")-1,0,0,"bla bla");
 				
 				Context cx = Context.enter();
 				try {

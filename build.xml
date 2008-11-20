@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
 
-<project name="JSLint" default="jar" basedir=".">
+<project name="JSLint" default="release" basedir=".">
 	<property file="build.properties"></property>
 	<property name="plugin.build" value="build" />
-	<property name="version" value="0.3" />
+	<property name="version" value="0.4" />
 	<property name="plugin.src" value="src" />
 	<property name="jedit.plugins.dir" value="../.." />
 	<property name="jedit.install.dir" value="../.." />
 	<property name="dist.dir" value="dist" />
+	<property name="rhino.release" value="rhino1_7R1" />
 
 
 	
@@ -20,20 +21,17 @@
 		<!-- Other plugin dependencies -->
 		<pathelement path="${jedit.plugins.dir}/errorlist.jar" />
 		<pathelement path="${jedit.plugins.dir}/console.jar" />
-		<pathelement path="${jedit.plugins.dir}/js.jar" />
 		<pathelement path="${jedit.install.dir}/jedit.jar" />
 		<pathelement path="." />
 	</path>
 
 
-	<target name="compile" description="Compiles all java files for the plugin" depends="init">
-		<javac
-				srcdir="${plugin.src}"
-				destdir="${plugin.build}"
-				deprecation="on"
-				debug="on"
-		optimize="off"
-		>
+	<target name="compile" description="Compiles all java files for the plugin" depends="init,rhino">
+		<javac destdir="${plugin.build}" deprecation="on" debug="on" optimize="off">
+			<src>
+				<path path="${plugin.src}"/>
+				<path path="src-download/${rhino.release}/src"/>
+			</src>
 			<classpath>
 				<path refid="build.classpath"/>
 			</classpath>
@@ -41,12 +39,33 @@
 		</javac>
 
 	</target>
+	
+	<target name="rhino" depends="rhino-check,rhino-download" />
+	<target name="rhino-check">
+		<condition property="rhino.available">
+		<and>
+			<available file="src-download/${rhino.release}/src/build.xml"/>
+		</and>
+		</condition>
+	</target>
+	<target name="rhino-download" unless="rhino.available">
+		<mkdir dir="src-download"/>
+		<get src="ftp://ftp.mozilla.org/pub/mozilla.org/js/${rhino.release}.zip"
+			dest="src-download/${rhino.release}.zip" usetimestamp="true"/>
+		<unzip src="src-download/${rhino.release}.zip" dest="src-download"/>
+	</target>
 
 
-	<target name="clean" description="Removes all generated files" depends="init">
+	<target name="clean-download" description="Removes all downloaded files">
+		<delete dir="${src-download}"/>
+	</target>
+
+
+	<target name="clean-build" description="Removes all generated files" depends="init">
 		<delete dir="${plugin.build}"  failonerror="false"/>
 		<mkdir dir="${plugin.build}"/>
 	</target>
+
 
 	<target name="dist" depends="compile" description="Packages the plugin in the jars directory">
 		<copy todir="${plugin.build}">
@@ -85,12 +104,10 @@
 	</target>
 
 
-	<target name="re-dist" description="Clean, init, dist" depends="clean, init, dist">
-	</target>
+	<target name="re-dist" description="Clean, init, dist" depends="clean-build, init, dist" />
 
 
-	<target name="re-dist-install" description="Clean, init, dist, install" depends="clean, init, dist, install">
-	</target>
+	<target name="re-dist-install" description="Clean, init, dist, install" depends="clean-build, init, dist, install" />
 
 </project>
 
