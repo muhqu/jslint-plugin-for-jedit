@@ -86,7 +86,7 @@ public class JSLintPlugin extends EBPlugin
 			String buffer_mode = buffer.getMode().getName();
 			if (buffer_mode.equals("javascript"))
 			{
-				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/jslint.js"));
+				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/src/jslint.js"));
 				//System.out.println("Got JSLint Source: " + jslintsource);
 				
 				String sourcepath = buffer.getPath();
@@ -95,7 +95,7 @@ public class JSLintPlugin extends EBPlugin
 				
 				errsrc.removeFileErrors(sourcepath);
 				
-				Context cx = Context.enter();
+				Context cx = ContextFactory.getGlobal().enterContext();
 				try {
 					Scriptable scope = cx.initStandardObjects();
 					
@@ -110,7 +110,7 @@ public class JSLintPlugin extends EBPlugin
 						System.out.println("JSLINT is defined, so call it.");
 				
 						String options = jEdit.getProperty("jslint.options");
-						System.out.println("JSLint Options: " + options);
+						//System.out.println("JSLint Options: " + options);
 						
 						Scriptable jsOpt = cx.newObject(scope);
 						try {
@@ -119,7 +119,7 @@ public class JSLintPlugin extends EBPlugin
 							{
 								String key = strtok.nextToken();
 								String value = strtok.nextToken();
-								System.out.println("key: "+key+"   value: "+value);
+								//System.out.println("key: "+key+"   value: "+value);
 								if (value.equalsIgnoreCase("TRUE")) {
 									jsOpt.put(key, jsOpt, true);
 								}
@@ -133,8 +133,8 @@ public class JSLintPlugin extends EBPlugin
 						}
 						catch (NoSuchElementException e) {
 						}
-						System.out.println("jsOpt: "+Context.toString(jsOpt));
-						System.out.println("eqeqeq: "+Context.toString(jsOpt.get("eqeqeq", scope)));
+						//System.out.println("jsOpt: "+Context.toString(jsOpt));
+						//System.out.println("eqeqeq: "+Context.toString(jsOpt.get("eqeqeq", scope)));
 						
 						Object functionArgs[] = { jssource.replaceAll("\t", "    "), jsOpt }; // need to translate TABs to Spaces to get correct column references
 						Function JSLINT = (Function)fObj;

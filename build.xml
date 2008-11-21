@@ -1,114 +1,65 @@
 <?xml version="1.0"?>
 
-<project name="JSLint" default="release" basedir=".">
-	<property file="build.properties"></property>
-	<property name="plugin.build" value="build" />
-	<property name="version" value="0.4" />
-	<property name="plugin.src" value="src" />
-	<property name="jedit.plugins.dir" value="../.." />
-	<property name="jedit.install.dir" value="../.." />
-	<property name="dist.dir" value="dist" />
-	<property name="rhino.release" value="rhino1_7R1" />
-
-
+<project name="JSLint" default="dist" basedir=".">
+	<property name="build.support" value="../build-support" />
+	<import file="${build.support}/plugin-build.xml" />
 	
-	<target name="init">
-		<mkdir dir="${plugin.build}"/>
-	</target>
+	<property name="download.dir" value="download" />
+	<property name="rhino.release" value="rhino1_7R1" />
+	<property name="rhino.dir" value="${download.dir}/${rhino.release}" />
+	<property name="rhino.jar" value="js.jar" />
 
-
-	<path id="build.classpath">
-		<!-- Other plugin dependencies -->
-		<pathelement path="${jedit.plugins.dir}/errorlist.jar" />
-		<pathelement path="${jedit.plugins.dir}/console.jar" />
-		<pathelement path="${jedit.install.dir}/jedit.jar" />
-		<pathelement path="." />
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar" />
+		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
+		<pathelement location="${jedit.plugins.dir}/Console.jar"/>
 	</path>
-
-
-	<target name="compile" description="Compiles all java files for the plugin" depends="init,rhino">
-		<javac destdir="${plugin.build}" deprecation="on" debug="on" optimize="off">
-			<src>
-				<path path="${plugin.src}"/>
-				<path path="src-download/${rhino.release}/src"/>
-			</src>
-			<classpath>
-				<path refid="build.classpath"/>
-			</classpath>
-			<compilerarg compiler="javac1.6" value="-Xlint:unchecked"/>
-		</javac>
-
+	
+	<selector id="extraFiles">
+		<and>
+			<or>
+				<filename name="**/actions.xml" />
+				<filename name="**/browser.actions.xml" />
+				<filename name="**/*.props" />
+				<filename name="**/LICENSE" />
+				<filename name="**/README" />
+				<filename name="**/*.js" /> <!-- add JavaScript files! -->
+			</or>
+			<not>
+				<or>
+					<filename name="${build.dir}/**" />
+					<filename name="${build.extras}/*"/>
+				</or>
+			</not>
+		</and>
+	</selector>
+	
+	<target name="build.prepare" depends="rhino-check,rhino-download">
+		<copy todir="${build.classes}" includeEmptyDirs="false">
+			<zipfileset src="${rhino.dir}/${rhino.jar}" />
+		</copy>
 	</target>
 	
 	<target name="rhino" depends="rhino-check,rhino-download" />
 	<target name="rhino-check">
 		<condition property="rhino.available">
-		<and>
-			<available file="src-download/${rhino.release}/src/build.xml"/>
-		</and>
+			<and>
+				<available file="${rhino.dir}/${rhino.jar}"/>
+			</and>
 		</condition>
 	</target>
 	<target name="rhino-download" unless="rhino.available">
-		<mkdir dir="src-download"/>
+		<mkdir dir="${download.dir}"/>
 		<get src="ftp://ftp.mozilla.org/pub/mozilla.org/js/${rhino.release}.zip"
-			dest="src-download/${rhino.release}.zip" usetimestamp="true"/>
-		<unzip src="src-download/${rhino.release}.zip" dest="src-download"/>
+			dest="${download.dir}/${rhino.release}.zip" usetimestamp="true"/>
+		<unzip src="${download.dir}/${rhino.release}.zip" dest="${rhino.dir}">
+			<patternset>
+				<include name="${rhino.release}/${rhino.jar}"/>
+			</patternset>
+			<mapper type="flatten"/>
+		</unzip>
 	</target>
-
-
-	<target name="clean-download" description="Removes all downloaded files">
-		<delete dir="${src-download}"/>
-	</target>
-
-
-	<target name="clean-build" description="Removes all generated files" depends="init">
-		<delete dir="${plugin.build}"  failonerror="false"/>
-		<mkdir dir="${plugin.build}"/>
-	</target>
-
-
-	<target name="dist" depends="compile" description="Packages the plugin in the jars directory">
-		<copy todir="${plugin.build}">
-			<fileset dir="${plugin.src}" includes="*.xml,*.props,**/*.txt,**/*.js,**/*.log" excludes="build.xml,dockables.xml"></fileset>
-			<fileset dir="." includes="docs/*.html" excludes="build.xml,dockables.xml"></fileset>
-		</copy>
-		<jar
-			jarfile="${dist.dir}/${ant.project.name}.jar"
-			basedir="${plugin.build}"
-			includes="**/*.class,**/*.xml,**/*.html,**/*.js,**/*.props"
-			excludes="build.xml,dockables.xml,**/Test.*"
-		/>
-	</target>
-
-
-	<target name="src_dist" description="Packages sources for distribution">
-		<zip zipfile="${plugin.src}/../${ant.project.name}${version}_src.zip"
-			basedir="${plugin.src}/.."
-			excludes="build/**,tags/**,**/*.bak,**/Fas*.jar,binaries/**,**/*.class,**/*.*~,**/*.zip"
-		/>
-	</target>
-
-
-	<target name="release" description="Packages all .jar file with JSLint binaries for release" depends="init,dist">
-		<zip zipfile="./${ant.project.name}${version}.zip">
-			<fileset dir="./" includes="README"></fileset>
-			<fileset dir="${dist.dir}" includes="${ant.project.name}.jar"></fileset>
-		</zip>
-	</target>
-
-
-	<target name="install" description="Install the distributed jar" depends="dist">
-		<copy todir="${install.dir}">
-			<fileset dir="${dist.dir}" includes="${ant.project.name}.jar"></fileset>
-		</copy>
-	</target>
-
-
-	<target name="re-dist" description="Clean, init, dist" depends="clean-build, init, dist" />
-
-
-	<target name="re-dist-install" description="Clean, init, dist, install" depends="clean-build, init, dist, install" />
-
+	
 </project>
 
 
