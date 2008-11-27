@@ -19,6 +19,7 @@ public class JSLintOptionPane extends AbstractOptionPane
 	private Hashtable<String, JRadioButton> PresetRadioButtons = new Hashtable<String, JRadioButton>();
 	private ButtonGroup preSelectBtnGroup = new ButtonGroup();
 	
+	private JTextField txt_buffermodes;
 	private JCheckBox chk_runOnSave;
 	private JCheckBox chk_runOnSwitch;
 	
@@ -66,6 +67,8 @@ public class JSLintOptionPane extends AbstractOptionPane
 
 	public void _save()
 	{
+		jEdit.setProperty("jslint.buffermodes",
+			txt_buffermodes.getText());
 		jEdit.setBooleanProperty("jslint.runonsave",
 			chk_runOnSave.isSelected());
 		jEdit.setBooleanProperty("jslint.runonbufferswitch",
@@ -78,12 +81,16 @@ public class JSLintOptionPane extends AbstractOptionPane
 		JPanel pnlMain = new JPanel(new BorderLayout());
 
 		//General Options setup
-		GridLayout gLay = new GridLayout();
-		gLay.setColumns(1);
-		gLay.setRows(0);
-		
-		JPanel pnlGeneral = new JPanel(gLay);
+		JPanel pnlGeneral = new JPanel(new GridLayout(0, 1));
 		pnlGeneral.setBorder(new TitledBorder("General Options"));
+		
+		JPanel pnlBuffermodes = new JPanel(new GridLayout(0, 2));
+		pnlBuffermodes.add(new JLabel("Edit modes in which JSLint should run"));
+		txt_buffermodes = new JTextField(
+			jEdit.getProperty("jslint.buffermodes", "javascript,html")
+		);
+		pnlBuffermodes.add(txt_buffermodes);
+		pnlGeneral.add(pnlBuffermodes);
 		
 		chk_runOnSave = new JCheckBox(
 			"Run JSLint on Buffer save",
@@ -114,10 +121,9 @@ public class JSLintOptionPane extends AbstractOptionPane
 		pre_clearall.addActionListener(this);
 		preSelectBtnGroup.add(pre_clearall);
 		pnlGeneral.add(pre_clearall);
-
+		
 		pnlMain.add(BorderLayout.NORTH, pnlGeneral);
 		pnlMain.add(BorderLayout.CENTER, getOptionsPanel());
-		//pnlMain.add(getOptionsPanel());
 
 		addComponent(pnlMain);
 		loadSettings();

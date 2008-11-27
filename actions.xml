@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="jslint.runjslint">
+		<CODE>
+			de.muhqu.jslint.JSLintPlugin.runJSLint(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="jslint.toggle-runjslint-on-save">
+		<CODE>
+			jEdit.setBooleanProperty("jslint.runonsave", !jEdit.getBooleanProperty("jslint.runonsave"));
+		</CODE>
+		<IS_SELECTED>
+			jEdit.getBooleanProperty("jslint.runonsave");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="jslint.toggle-runjslint-on-switch">
+		<CODE>
+			jEdit.setBooleanProperty("jslint.runonbufferswitch", !jEdit.getBooleanProperty("jslint.runonbufferswitch"));
+		</CODE>
+		<IS_SELECTED>
+			jEdit.getBooleanProperty("jslint.runonbufferswitch");
+		</IS_SELECTED>
+	</ACTION>
+</ACTIONS>
+
+

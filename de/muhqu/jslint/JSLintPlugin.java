@@ -42,7 +42,7 @@ public class JSLintPlugin extends EBPlugin
 		if (ebmess instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate)ebmess;
 			if (bu.getWhat() == BufferUpdate.SAVED) {
-				System.out.println("JSLint running on save "+
+				System.out.println("JSLint running on save : "+
 				jEdit.getBooleanProperty("jslint.runonsave"));
 				if(jEdit.getBooleanProperty("jslint.runonsave")) {
 					run(bu.getView());
@@ -52,13 +52,25 @@ public class JSLintPlugin extends EBPlugin
 		else if (ebmess instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate)ebmess;
 			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
-				System.out.println("JSLint running on buffer switch "+
+				System.out.println("JSLint running on buffer switch : "+
 				jEdit.getBooleanProperty("jslint.runonbufferswitch"));
 				if(jEdit.getBooleanProperty("jslint.runonbufferswitch")) {
 					run(epu.getEditPane().getView());
 				}
 			}
 		}
+	}
+	
+	private boolean needToRunOnBuffer(Buffer buffer) {
+		String buffer_mode = buffer.getMode().getName();
+		String buffer_modes_to_run_on = jEdit.getProperty("jslint.buffermodes", "javascript,html"); // "javascript,html,php";
+		StringTokenizer strtok = new StringTokenizer(buffer_modes_to_run_on,",");
+		while(strtok.hasMoreTokens())
+		{
+			String mode_to_test = (strtok.nextToken()).trim();
+			if (buffer_mode.equals(mode_to_test)) return true;
+		}
+		return false;
 	}
 	
 	public static String inputStreamAsString(InputStream stream)
@@ -83,10 +95,11 @@ public class JSLintPlugin extends EBPlugin
 		try
 		{
 			Buffer buffer = view.getBuffer();
-			String buffer_mode = buffer.getMode().getName();
-			if (buffer_mode.equals("javascript"))
+			boolean needtorun = needToRunOnBuffer(buffer);
+			System.out.println("JSLINT: need to run: " + needtorun + "  (mode:"+buffer.getMode().getName()+")");
+			if (needtorun)
 			{
-				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/src/jslint.js"));
+				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/jslint.js"));
 				//System.out.println("Got JSLint Source: " + jslintsource);
 				
 				String sourcepath = buffer.getPath();
@@ -145,13 +158,13 @@ public class JSLintPlugin extends EBPlugin
 						System.out.println("JSLINT.errors: "+Context.toString(errArr));
 						for (int i=0; i<errLength; i++){
 							Scriptable err = (Scriptable) errArr.get(i, scope);
-							int errLine = (int)Context.toNumber(ScriptableObject.getProperty(err, "line"));
-							int errCol = (int)Context.toNumber(ScriptableObject.getProperty(err, "character"));
-							String errMsg = Context.toString(ScriptableObject.getProperty(err, "reason"));
+							if (Context.toString(err).equals("null")) continue;
+							
+							int errLine = (int) Context.toNumber( ScriptableObject.getProperty(err, "line") );
+							int errCol = (int) Context.toNumber( ScriptableObject.getProperty(err, "character") );
+							String errMsg = Context.toString( ScriptableObject.getProperty(err, "reason") );
 							
 							System.out.println("JSLINT.errors["+i+"]: on line "+errLine+", col "+errCol+", msg: "+errMsg+"");
-							
-							System.out.println("match "+buffer.getVirtualWidth(errLine,errCol)+" - "+errCol);
 							
 							errsrc.addError(ErrorSource.ERROR,
 								sourcepath,
