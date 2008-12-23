@@ -4,15 +4,18 @@
 	<property name="build.support" value="../build-support" />
 	<import file="${build.support}/plugin-build.xml" />
 	
+	<!-- 
 	<property name="download.dir" value="download" />
 	<property name="rhino.release" value="rhino1_7R1" />
 	<property name="rhino.dir" value="${download.dir}/${rhino.release}" />
 	<property name="rhino.jar" value="js.jar" />
-
+	-->
+	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
 		<pathelement location="${jedit.plugins.dir}/Console.jar"/>
+		<pathelement location="${jedit.plugins.dir}/js.jar"/> <!-- rhino, installed by JavascriptScriptEnginePlugin-->
 	</path>
 	
 	<selector id="extraFiles">
@@ -34,6 +37,7 @@
 		</and>
 	</selector>
 	
+	<!-- 
 	<target name="build.prepare" depends="rhino-check,rhino-download">
 		<copy todir="${build.classes}" includeEmptyDirs="false">
 			<zipfileset src="${rhino.dir}/${rhino.jar}" />
@@ -59,6 +63,7 @@
 			<mapper type="flatten"/>
 		</unzip>
 	</target>
+	-->
 	
 </project>
 

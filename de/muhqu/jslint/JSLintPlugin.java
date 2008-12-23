@@ -108,7 +108,7 @@ public class JSLintPlugin extends EBPlugin
 				
 				errsrc.removeFileErrors(sourcepath);
 				
-				Context cx = ContextFactory.getGlobal().enterContext();
+				Context cx = ContextFactory.getGlobal().enter();
 				try {
 					Scriptable scope = cx.initStandardObjects();
 					
