@@ -17,7 +17,7 @@ import org.mozilla.javascript.*;
 public class JSLintPlugin extends EBPlugin
 {
 	public final static String NAME = "jslint";
-	static boolean log = jEdit.getBooleanProperty("jslint.log",false);;
+	static boolean log = jEdit.getBooleanProperty("jslint.log",false);
 	DefaultErrorSource errsrc;
 	private static JSLintPlugin me;
 	
@@ -42,9 +42,7 @@ public class JSLintPlugin extends EBPlugin
 		if (ebmess instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate)ebmess;
 			if (bu.getWhat() == BufferUpdate.SAVED) {
-				System.out.println("JSLint running on save : "+
-				jEdit.getBooleanProperty("jslint.runonsave"));
-				if(jEdit.getBooleanProperty("jslint.runonsave")) {
+				if(jEdit.getBooleanProperty("jslint.runonsave", false)) {
 					run(bu.getView());
 				}
 			}
@@ -52,9 +50,7 @@ public class JSLintPlugin extends EBPlugin
 		else if (ebmess instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate)ebmess;
 			if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
-				System.out.println("JSLint running on buffer switch : "+
-				jEdit.getBooleanProperty("jslint.runonbufferswitch"));
-				if(jEdit.getBooleanProperty("jslint.runonbufferswitch")) {
+				if(jEdit.getBooleanProperty("jslint.runonbufferswitch", false)) {
 					run(epu.getEditPane().getView());
 				}
 			}
@@ -96,7 +92,6 @@ public class JSLintPlugin extends EBPlugin
 		{
 			Buffer buffer = view.getBuffer();
 			boolean needtorun = needToRunOnBuffer(buffer);
-			System.out.println("JSLINT: need to run: " + needtorun + "  (mode:"+buffer.getMode().getName()+")");
 			if (needtorun)
 			{
 				String jslintsource = inputStreamAsString(this.getClass().getResourceAsStream("/jslint.js"));
@@ -122,7 +117,7 @@ public class JSLintPlugin extends EBPlugin
 					} else {
 						System.out.println("JSLINT is defined, so call it.");
 				
-						String options = jEdit.getProperty("jslint.options");
+						String options = jEdit.getProperty("jslint.options", "");
 						//System.out.println("JSLint Options: " + options);
 						
 						Scriptable jsOpt = cx.newObject(scope);

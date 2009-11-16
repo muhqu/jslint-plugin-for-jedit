@@ -249,12 +249,12 @@ public class JSLintOptionPane extends AbstractOptionPane
 	void loadSettings()
 	{
 		String options = jEdit.getProperty("jslint.options");
-		System.out.println("loadSettings:: Options: " + options);
 		if (options == null) {
 			applyPreselect("recommended");
 			saveSettings();
 			return;
 		}
+		System.out.println("loadSettings:: Options: " + options);
 		
 		StringTokenizer strtok = new StringTokenizer(options,",:");
 		while(strtok.hasMoreTokens())
