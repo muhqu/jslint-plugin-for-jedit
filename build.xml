@@ -11,6 +11,8 @@
 	<property name="rhino.jar" value="js.jar" />
 	-->
 	
+	<property name="docs-proc.target" value="none" />
+	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${jedit.plugins.dir}/ErrorList.jar"/>
