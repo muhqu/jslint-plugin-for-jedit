@@ -2,6 +2,8 @@
 
 <project name="JSLint" default="dist" basedir=".">
 	<property name="build.support" value="../build-support" />
+	<property name="docs-proc.target" value="none" />
+
 	<import file="${build.support}/plugin-build.xml" />
 	
 	<!-- 
@@ -11,7 +13,6 @@
 	<property name="rhino.jar" value="js.jar" />
 	-->
 	
-	<property name="docs-proc.target" value="none" />
 	
 	<path id="project.class.path">
 		<pathelement location="${jedit.install.dir}/jedit.jar" />
@@ -29,6 +30,8 @@
 				<filename name="**/LICENSE" />
 				<filename name="**/README" />
 				<filename name="**/*.js" /> <!-- add JavaScript files! -->
+				<filename name="docs/JSLint.html" />
+				<filename name="docs/*.png" />
 			</or>
 			<not>
 				<or>

@@ -4,6 +4,7 @@ plugin.de.muhqu.jslint.JSLintPlugin.name=JSLint
 plugin.de.muhqu.jslint.JSLintPlugin.author=Mathias Leppich
 plugin.de.muhqu.jslint.JSLintPlugin.version=0.8
 plugin.de.muhqu.jslint.JSLintPlugin.description=JSLint - The JavaScript Verifier - is a JavaScript source checker and validator. This PlugIn actually runs jslint.js within Rhino. It supports all major JSLint options and lets you decide to Run JSLint 'on buffer save' and/or 'on buffer switch'.
+plugin.de.muhqu.jslint.JSLintPlugin.docs=docs/JSLint.html
 de.muhqu.jslint.JSLintPlugin.title=JSLint
 
 #external depencies
